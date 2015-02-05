@@ -7,7 +7,8 @@ Description: TRAFIC is a rare-variant association test using affected sibpairs.
 Depends: R (>= 3.1.2)
 License: GPL-3
 LazyData: true
-URL: http://www-personal.umich.edu/~khlin/
+URL: http://github.com/gtlntw/TRAFIC
+BugReports: http://github.com/gtlntw/TRAFIC/issues
 Suggests: knitr,
     testthat
 VignetteBuilder: knitr

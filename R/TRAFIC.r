@@ -2,7 +2,6 @@
 ##assume unphased data
 #input of 1. sum of minor allele count genotype data 2. SNP label 3. no. of IBD choromosome region estimation for each sibpair
 #currently use f<0.01 SNPs
-#things to add:
 #input the snp of interest
 #####################################
 #' Test for Rare-variant Asoociation with Family Internal Control.
@@ -20,6 +19,8 @@
 #' @examples
 #' TRAFIC(genotype_file="genotype_test.geno", label_file="genotype_test.dat", ibd_file="S_sibpair.ibd", snp="1")
 #'
+#' URL: http://github.com/gtlntw/TRAFIC
+#' BugReports: http://github.com/gtlntw/TRAFIC/issues
 
 #' @export
 TRAFIC <- function(genotype_file="data_sibpair.geno", label_file="data_sibpair.ped", ibd_file="S_sibpair.ibd",
