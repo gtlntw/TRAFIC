@@ -1,0 +1,13 @@
+Package: TRAFIC
+Title: What the Package Does (one line, title case)
+Version: 0.1.0.0000
+Authors@R: person("Keng-Han", "Lin", , "khlin@umich.edu", role = c("aut", "cre"))
+Description: TRAFIC is a rare-variant association test using affected sibpairs.
+	TAFIC compares the risk allele frequency between shared IBD chromosome regions 'cases' and non-shared IBD choromosome region 'controls'
+Depends: R (>= 3.1.2)
+License: GPL-3
+LazyData: true
+URL: http://www-personal.umich.edu/~khlin/
+Suggests: knitr,
+    testthat
+VignetteBuilder: knitr
