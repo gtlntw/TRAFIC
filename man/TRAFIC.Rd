@@ -28,5 +28,8 @@ double-heterozygote who share one IBD chromosome region.
 }
 \examples{
 TRAFIC(genotype_file="genotype_test.geno", label_file="genotype_test.dat", ibd_file="S_sibpair.ibd", snp="1")
+
+URL: http://github.com/gtlntw/TRAFIC
+BugReports: http://github.com/gtlntw/TRAFIC/issues
 }
 
