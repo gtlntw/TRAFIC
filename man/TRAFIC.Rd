@@ -4,8 +4,8 @@
 \alias{TRAFIC}
 \title{Test for Rare-variant Asoociation with Family Internal Control.}
 \usage{
-TRAFIC(genotype_file = "data_sibpair.geno", label_file = "data_sibpair.ped",
-  ibd_file = "S_sibpair.ibd", snp = NA)
+TRAFIC(genotype_file = "data_sibpair.geno", label_file = "data_sibpair.dat",
+  ibd_file = "S_sibpair.ibd", marker_group = "")
 }
 \arguments{
 \item{label_file}{filename for the SNPs.}
@@ -28,8 +28,5 @@ double-heterozygote who share one IBD chromosome region.
 }
 \examples{
 TRAFIC(genotype_file="genotype_test.geno", label_file="genotype_test.dat", ibd_file="S_sibpair.ibd", snp="1")
-
-URL: http://github.com/gtlntw/TRAFIC
-BugReports: http://github.com/gtlntw/TRAFIC/issues
 }
 

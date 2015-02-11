@@ -20,19 +20,52 @@
 #' TRAFIC(genotype_file="genotype_test.geno", label_file="genotype_test.dat", ibd_file="S_sibpair.ibd", snp="1")
 #'
 #' @export
-TRAFIC <- function(genotype_file="data_sibpair.geno", label_file="data_sibpair.ped", ibd_file="S_sibpair.ibd",
-                   snp=NA) {
-  sibpair_data <- read.table(genotype_file) #sibpair genotype data
+
+TRAFIC <- function(ped_file="./inst/data_sibpair.ped", label_file="./inst/data_sibpair.dat", ibd_file="./inst/S_sibpair.ibd",
+                   marker_group="./inst/data_sibpair.gene") {
+  genotype <- ped2geno(ped_file) #sibpair genotype data
   label <- read.table(label_file, stringsAsFactors=F) #marker's labels
-  genotype <- sibpair_data[, 7:ncol(sibpair_data)]
-  names(genotype) <- label$V2[which(label$V1=="M")]
-
-  snp_list <- c(4,5,9,12,25,27,32,34,44,45) #snp to test
-  genotype_test <- genotype[,snp_list] #only extract the snps of interest
-
+  colnames(genotype) <- label$V2[which(label$V1=="M")]
   S_sibpair <- read.table(ibd_file)$V1 # no. of IBD choromosome region estimation for each sibpair
-  n_sample <- nrow(genotype)/2
 
+  gene_marker_list <- readLines(marker_group) #read in genes and the corresponding markers
+
+  result <- list(gene_name=NULL, p.case=NULL, p.control=NULL, p.value=NULL) #list of result
+  for(i in 1:length(gene_marker_list)) {
+    gene_marker <- unlist(strsplit(gene_marker_list[i], " ")) #split into gene name and SNP name
+    print(paste("processing gene", i,":", gene_marker[1], "..."))
+    genotype_test <- genotype[,gene_marker[-1]] #only extract the snps of interest
+    result <- mapply(c, result, c(gene_marker[1], TRAFIC_test(genotype_test, S_sibpair)), SIMPLIFY=F)
+  }
+  class(result) <- "trafic"
+  result #return
+}
+
+ped2geno <- function(ped_file) {
+  ped <- read.table(ped_file, stringsAsFactors=F)[,-(1:6)]
+  n_ind <- nrow(ped)
+  n_marker <- ncol(ped)
+  #convert to one column one marker
+  ped <- rbind(ped[, seq(1,n_marker, by=2)], setNames(ped[, seq(2,n_marker, by=2)], names(ped[, seq(1,n_marker, by=2)])))
+  minor.count <- apply(ped,2,function(x) { #return the least minor allele count
+    table.result <- table(x) #make a table to see which allele is minor
+    if(length(table.result)==1) return(x*0) #if monomorphic returns 0
+    minor.allele <- names(table.result)[which.min(table.result)] #determine the minor allele
+    y <- (x==minor.allele) + 0 #return minor allele count
+  })
+  minor.count[seq(1, n_ind),] + minor.count[seq(n_ind+1, 2*n_ind),] #geotype count of minor allele
+}
+
+print.trafic <- function(x) {
+  n_gene <- length(x$gene_name)
+  cat(paste("Gene_name", "p.case", "p.control", "p.value", sep='\t'), "\n")
+  for(i in 1:n_gene) {
+    cat(paste(x$gene_name[i], round(x$p.case[i], 3), round(x$p.control[i], 3), x$p.value[i], sep='\t'), "\n")
+  }
+}
+
+TRAFIC_test <- function(genotype_test, S_sibpair){
+  n_sample <- length(S_sibpair)
   #need EM for double-het in S=1
   #at a position what is the allele freq. on share and non-shared chromosome
   ##EM algorithm for imputation
@@ -202,10 +235,13 @@ TRAFIC <- function(genotype_file="data_sibpair.geno", label_file="data_sibpair.p
 
     TD <- mean(diff)
     VARD <- mean(var) + (1+1/D)*sum((diff-TD)^2)/(D-1)
-    c(p.cases=mean(p1_D), p.controls=mean(p2_D), p.value=pchisq(TD^2/VARD, df=1, lower=F))
+    list(p.cases=mean(p1_D), p.controls=mean(p2_D), p.value=pchisq(TD^2/VARD, df=1, lower=F))
   }
   genotype.result <- MI_geno()
   genotype.result
 }
 
+
 ##relabel the chromosome if want to use other published methods
+
+
