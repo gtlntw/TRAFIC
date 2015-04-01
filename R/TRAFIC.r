@@ -1,29 +1,35 @@
 ##Execute TRAFIC
 ##assume unphased data
 #input of 1. sum of minor allele count genotype data 2. SNP label 3. no. of IBD choromosome region estimation for each sibpair
-#currently use f<0.01 SNPs
 #input the snp of interest
 #####################################
-#' Test for Rare-variant Asoociation with Family Internal Control.
+#' TRAFIC: Test for Rare-variant Asoociation with Family Internal Control.
 #'
-#' \code{TRAFIC} Use TRAFIC to test for associations and returns the p-value.
+#' \code{trafic} Use TRAFIC to test for associations and returns the p-value.
 #'
 #' @details
-#' TRAFIC uses multiple impulation to impute sharing status of ambiguous
+#' \code{trafic} uses multiple impulation to impute sharing status of ambiguous
 #' double-heterozygote who share one IBD chromosome region.
 #'
 #' @param ped_file a ped file contains genotypes.
 #' @param label_file a file contains the name for the SNPs.
 #' @param ibd_file a file contains the IBD status of each sibpair for every gene
-#' @param marker_group a file contains the snps of interest in each gene
-#' @return TRAFIC return the allele frequecy for cases and controls as well as p-value
-#' @author Keng-Han Lin
+#' @param gene_group a file contains the snps of interest in each gene
+#' @param impute whether to generate imputed dosage
+#' @return \code{trafic} returns the allele frequecy for cases and controls as well as p-value for each tested gene
 #' @examples
-#' TRAFIC(ped_file="./inst/data_sibpair.ped", label_file="./inst/data_sibpair.dat", ibd_file="./inst/S_sibpair.ibd", marker_group="./inst/data_sibpair.gene", impute=FALSE)
+#' #read in files
+#' ped_file <- system.file("data_sibpair.ped", package="TRAFIC")
+#' label_file <- system.file("data_sibpair.dat", package="TRAFIC")
+#' ibd_file <- system.file("S_sibpair.ibd", package="TRAFIC")
+#' gene_group <- system.file("data_sibpair.gene", package="TRAFIC")
+#'
+#' #perform trafic
+#' trafic(ped_file, label_file, ibd_file, gene_group, impute=FALSE)
 #' @export
 
 trafic <- function(ped_file="./inst/data_sibpair.ped", label_file="./inst/data_sibpair.dat", ibd_file="./inst/S_sibpair.ibd",
-                   marker_group="./inst/data_sibpair.gene", impute=FALSE) {
+                   gene_group="./inst/data_sibpair.gene", impute=FALSE) {
   temp <- ped2geno(ped_file) #sibpair genotype data
   genotype <- temp$minor.count
   genotype.allele <- temp$minor.which
@@ -31,7 +37,7 @@ trafic <- function(ped_file="./inst/data_sibpair.ped", label_file="./inst/data_s
   colnames(genotype) <- label$V2[which(label$V1=="M")]
   colnames(genotype.allele) <- label$V2[which(label$V1=="M")]
   S_sibpair <- read.table(ibd_file) # no. of IBD choromosome region estimation for each sibpair
-  gene_marker_list <- readLines(marker_group) #read in genes and the corresponding markers
+  gene_marker_list <- readLines(gene_group) #read in genes and the corresponding markers
 
   if(impute==TRUE) {
     fileConn<-file("./dosage.dat", "w")
@@ -93,7 +99,7 @@ ped2geno <- function(ped_file) {
 }
 
 #' print trafic class
-print.trafic <- function(x) {  #need adjustment, not pretty looking now
+print.trafic <- function(x, ...) {  #need adjustment, not pretty looking now
   n_gene <- length(x$gene_name)
   cat(paste("Gene_name", "p.case", "p.control", "p.value", collapse='\t'), "\n")
   for(i in 1:n_gene) {
