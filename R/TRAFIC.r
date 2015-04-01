@@ -22,7 +22,7 @@
 #' TRAFIC(ped_file="./inst/data_sibpair.ped", label_file="./inst/data_sibpair.dat", ibd_file="./inst/S_sibpair.ibd", marker_group="./inst/data_sibpair.gene", impute=FALSE)
 #' @export
 
-TRAFIC <- function(ped_file="./inst/data_sibpair.ped", label_file="./inst/data_sibpair.dat", ibd_file="./inst/S_sibpair.ibd",
+trafic <- function(ped_file="./inst/data_sibpair.ped", label_file="./inst/data_sibpair.dat", ibd_file="./inst/S_sibpair.ibd",
                    marker_group="./inst/data_sibpair.gene", impute=FALSE) {
   temp <- ped2geno(ped_file) #sibpair genotype data
   genotype <- temp$minor.count
@@ -46,7 +46,7 @@ TRAFIC <- function(ped_file="./inst/data_sibpair.ped", label_file="./inst/data_s
     print(paste("processing gene", i,":", gene_marker[1], "..."))
     genotype_test <- genotype[,gene_marker[-1]] #only extract the snps of interest
     genotype.allele_test <- genotype.allele[,gene_marker[-1]] #only extract the snps of interest
-    result <- TRAFIC_test(genotype_test, genotype.allele_test, S_sibpair[, i], impute=impute)
+    result <- trafic_test(genotype_test, genotype.allele_test, S_sibpair[, i], impute=impute)
     final.result <- mapply(c, final.result, c(gene_marker[1], result$trafic.result), SIMPLIFY=F)
 
     #relabel the chromosome if want to use other published methods
@@ -61,12 +61,12 @@ TRAFIC <- function(ped_file="./inst/data_sibpair.ped", label_file="./inst/data_s
     }
   }
   if(impute==TRUE) {
-    close(fileConn)
+    close(fileConn) #close writing to dosage.dat
     #output fam file
     fileConn<-file("./dosage.fam", "w")
     writeLines(paste(1:n.case, "1 0 0 0 2", sep=" "), fileConn)
     writeLines(paste(n.case+(1:n.control), "1 0 0 0 1", sep=" "), fileConn)
-    close(fileConn)
+    close(fileConn) #close writing to dosage.fam
   }
 
   class(final.result) <- "trafic"
@@ -97,12 +97,12 @@ print.trafic <- function(x) {  #need adjustment, not pretty looking now
   n_gene <- length(x$gene_name)
   cat(paste("Gene_name", "p.case", "p.control", "p.value", collapse='\t'), "\n")
   for(i in 1:n_gene) {
-    cat(paste(x$gene_name[i], round(x$p.case[i], 3), round(x$p.control[i], 3), x$p.value[i], sep='\t'), "\n")
+    cat(paste(x$gene_name[i], round(x$p.case[i], 3), round(x$p.control[i], 3), round(x$p.value[i], 10), sep='\t'), "\n")
   }
 }
 
 #' trafic test
-TRAFIC_test <- function(genotype_test, genotype.allele_test, S_sibpair, impute=FALSE){
+trafic_test <- function(genotype_test, genotype.allele_test, S_sibpair, impute=FALSE){
   n_sample <- length(S_sibpair)
   n_snp <- ncol(genotype_test)
   #need EM for double-het in S=1
@@ -376,7 +376,7 @@ TRAFIC_test <- function(genotype_test, genotype.allele_test, S_sibpair, impute=F
 
     return(list(trafic.result=trafic.result, dosage=dosage)) #with impute dosage
   }
-  return(trafic.result=trafic.result) #return without no impute dosage
+  return(list(trafic.result=trafic.result)) #return without no impute dosage
 }
 
 

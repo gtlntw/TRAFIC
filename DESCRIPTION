@@ -1,7 +1,8 @@
 Package: TRAFIC
 Title: Test of Rare variant Associations using Family Internal Control
 Version: 0.1.0.0000
-Authors@R: person("Keng-Han", "Lin", , "khlin@umich.edu", role = c("aut", "cre"))
+Authors: Keng-Han Lin
+Maintainer: Keng-Han Lin <khlin@umich.edu>
 Description: TRAFIC is a rare-variant association test using affected sibpairs.
 	TAFIC compares the risk allele frequency between shared IBD chromosome regions 'cases' and non-shared IBD chromosome regions 'controls'
 Depends: R (>= 3.1.2)
@@ -10,6 +11,5 @@ LazyData: true
 Date: 2015-04-01
 URL: http://github.com/gtlntw/TRAFIC
 BugReports: http://github.com/gtlntw/TRAFIC/issues
-Suggests: knitr,
-    testthat
+Suggests: knitr, testthat
 VignetteBuilder: knitr 
